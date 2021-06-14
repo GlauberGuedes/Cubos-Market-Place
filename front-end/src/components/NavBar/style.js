@@ -4,8 +4,8 @@ const useStyles = makeStyles((theme) => ({
   nav: {
     display: "flex",
     flexDirection: "column",
-    gap: 34,
-    marginTop: 113,
+    gap: 50,
+    marginTop: 100,
   },
   appbar: {
     display: "flex",

@@ -55,7 +55,7 @@ export default function Modal({ id, setErro, setOpenLoading, token, carregarProd
   }
 
   return (
-    <div onClick={(e) => stop(e)}>
+    <div onClick={(e) => stop(e)} className={classes.container}>
       <DeleteSweepIcon
         className={classes.deleteIcon}
         onClick={handleClickOpen}

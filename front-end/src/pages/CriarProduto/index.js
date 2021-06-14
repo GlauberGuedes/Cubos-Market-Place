@@ -4,23 +4,72 @@ import TextField from "@material-ui/core/TextField";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Divider from "@material-ui/core/Divider";
 import Button from "@material-ui/core/Button";
-import { NavLink } from "react-router-dom";
+import { NavLink, useHistory } from "react-router-dom";
 import useStyles from "./style";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useAuth from "../../hooks/useAuth";
 import { useForm } from "react-hook-form";
+import { validarProduto } from "../../utils/validacao";
+import Loading from "../../components/Loading";
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 
 export default function CriarProduto() {
   const { register, handleSubmit } = useForm();
   const classes = useStyles();
-  const { setSelecionado } = useAuth();
+  const { setSelecionado, token, usuario } = useAuth();
+  const [erro, setErro] = useState('');
+  const [openLoading, setOpenLoading] = useState(false);
+  const history = useHistory();
+
+  function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+  }
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setErro("");
+    }, 5000);
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [erro]);
 
   useEffect(() => {
     setSelecionado("storeSelected");
   }, []);
 
-  function onSubmit(data) {
-    console.log(data);
+  async function onSubmit(data) {
+    setErro('');
+    const verificarProduto = validarProduto(data.nome, data.preco, data.estoque, data.descricao);
+
+    if(verificarProduto) {
+      return setErro(verificarProduto);
+    }
+
+    try{
+      const resposta = await fetch('http://localhost:8000/produtos', {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-type': 'application/json',
+        }
+      });
+
+      const dados = await resposta.json();
+      setOpenLoading(false);
+
+      if(!resposta.ok) {
+        return setErro(dados);
+      }
+
+      history.push('/produtos');
+
+    }catch(error) {
+      setOpenLoading(false);
+      setErro(error.message);
+    }
   }
 
   return (
@@ -28,7 +77,7 @@ export default function CriarProduto() {
       <Navbar />
       <form className={classes.produtos} onSubmit={handleSubmit(onSubmit)}>
         <Typography variant="h3" component="h2" className={classes.titulo}>
-          Nome da loja
+          {usuario.nome_loja}
         </Typography>
         <Typography variant="h4" component="h2" className={classes.subtitulo}>
           Adicionar produto
@@ -81,6 +130,7 @@ export default function CriarProduto() {
           <TextField
             className={classes.input}
             id="imagem"
+            type="url"
             label="Imagem"
             {...register("imagem")}
             InputLabelProps={{
@@ -103,6 +153,12 @@ export default function CriarProduto() {
           </Button>
         </div>
       </form>
+      <Loading open={openLoading} />
+      <Snackbar open={erro ? true : false} autoHideDuration={6000} >
+        <Alert severity="error">
+          {erro}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }

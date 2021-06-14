@@ -16,6 +16,7 @@ const useStyles = makeStyles((theme) => ({
   containerEditar: {
     display: "flex",
     gap: 166,
+    marginBottom: 48,
   },
   editarProduto: {
     display: "flex",

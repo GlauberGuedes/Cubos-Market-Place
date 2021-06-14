@@ -23,7 +23,7 @@ export default function Login() {
   const [visivel, setVisivel] = useState(false);
   const [openLoading, setOpenLoading] = useState(false);
   const [erro, setErro] = useState("");
-  const { setToken } = useAuth();
+  const { setToken, setUsuario } = useAuth();
   const history = useHistory();
 
   const handleClickShowPassword = () => {
@@ -58,6 +58,7 @@ export default function Login() {
         return setErro(dados);
       }
       setToken(dados.token);
+      setUsuario(dados.usuario);
 
       history.push('/produtos');
 

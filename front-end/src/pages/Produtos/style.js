@@ -24,19 +24,23 @@ const useStyles = makeStyles((theme) => ({
     overflowX: 'auto',
   },
   card: {
-    width: 232,
-    minWidth: 232,
-    minHeight: 433,
+    width: 201,
+    minWidth: 201,
+    minHeight: 355,
     marginBottom: 13,
+    borderRadius: 24,
   },
   imagem: {
-    width: 232,
-    height: 240,
+    width: 201,
+    height: 250,
   },
   cardActions: {
     display: "flex",
     justifyContent: "space-between",
   },
+  preco: {
+    fontWeight: 600,
+  }
 }));
 
 export default useStyles;

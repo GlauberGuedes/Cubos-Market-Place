@@ -19,7 +19,7 @@ import MuiAlert from '@material-ui/lab/Alert';
 export default function Produtos() {
   const classes = useStyles();
   const history = useHistory();
-  const { setSelecionado, token } = useAuth();
+  const { setSelecionado, token, usuario } = useAuth();
   const [erro, setErro] = useState("");
   const [openLoading, setOpenLoading] = useState(false);
   const [produtos, setProdutos] = useState([]);
@@ -30,7 +30,7 @@ export default function Produtos() {
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      setErro(false);
+      setErro("");
     }, 5000);
     return () => {
       clearTimeout(timeout);
@@ -67,7 +67,7 @@ export default function Produtos() {
       <Navbar />
       <div className={classes.produtos}>
         <Typography variant="h3" component="h2" className={classes.titulo}>
-          Nome da loja
+          {usuario.nome_loja}
         </Typography>
         <Typography variant="h4" component="h2" className={classes.subtitulo}>
           Seus produtos
@@ -111,10 +111,10 @@ export default function Produtos() {
                     component="p"
                   >
                     {produto.estoque}{" "}
-                    {produtos.estoque > 1 ? "unidades" : "unidade"}
+                    {produto.estoque > 1 ? "UNIDADES" : "UNIDADE"}
                   </Typography>
-                  <Typography gutterBottom variant="body2" component="p">
-                    R$ {produto.preco}
+                  <Typography gutterBottom variant="body2" component="p" className={classes.preco}>
+                    R$ {String((produto.preco / 100).toFixed(2)).replace(".", ",")}
                   </Typography>
                 </CardActions>
               </Card>

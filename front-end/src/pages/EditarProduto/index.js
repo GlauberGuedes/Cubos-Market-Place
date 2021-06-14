@@ -5,23 +5,72 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import Divider from "@material-ui/core/Divider";
 import Button from "@material-ui/core/Button";
 import CardMedia from "@material-ui/core/CardMedia";
-import { NavLink } from "react-router-dom";
+import { NavLink,useParams, useHistory } from "react-router-dom";
 import useStyles from "./style";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useAuth from "../../hooks/useAuth";
 import { useForm } from "react-hook-form";
+import Loading from "../../components/Loading";
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+
 
 export default function EditarProduto() {
   const classes = useStyles();
   const { register, handleSubmit } = useForm();
-  const { setSelecionado } = useAuth();
+  const { setSelecionado, token, usuario } = useAuth();
+  const [erro, setErro] = useState('');
+  const [openLoading, setOpenLoading] = useState(false);
+  const { id } = useParams();
+  const history = useHistory();
+  
+  function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+  }
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setErro("");
+    }, 5000);
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [erro]);
 
   useEffect(() => {
     setSelecionado("storeSelected");
   }, []);
 
-  function onSubmit(data) {
-    console.log(data);
+  async function onSubmit(data) {
+    setErro('');
+
+    try{
+      setOpenLoading(true);
+      
+      const resposta = await fetch(`http://localhost:8000/produtos/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-type': 'application/json',
+        }
+      });
+
+      const resultado = await resposta.json();
+      setOpenLoading(false);
+
+      if(!resposta.ok) {
+        console.log(resultado)
+        return setErro(resultado);
+      }
+
+      history.push('/produtos');
+
+    }catch(error) {
+      console.log(error.message)
+      setOpenLoading(false);
+      return setErro(error.message)
+    }
   }
 
   return (
@@ -29,7 +78,7 @@ export default function EditarProduto() {
       <Navbar />
       <form className={classes.produtos} onSubmit={handleSubmit(onSubmit)}>
         <Typography variant="h3" component="h2" className={classes.titulo}>
-          Nome da loja
+          {usuario.nome_loja}
         </Typography>
         <Typography variant="h4" component="h2" className={classes.subtitulo}>
           Editar produto
@@ -38,7 +87,6 @@ export default function EditarProduto() {
           <div className={classes.editarProduto}>
             <TextField
               className={classes.input}
-              defaultValue="Nome do produto"
               id="nome"
               label="Nome do produto"
               {...register("nome")}
@@ -49,7 +97,6 @@ export default function EditarProduto() {
             <div className={(classes.input, classes.listaInputs)}>
               <TextField
                 className={classes.inputNumber}
-                defaultValue="99.99"
                 id="preco"
                 label="Preço"
                 {...register("preco")}
@@ -62,7 +109,6 @@ export default function EditarProduto() {
               />
               <TextField
                 className={classes.inputNumber}
-                defaultValue="5"
                 id="estoque"
                 label="Estoque"
                 {...register("estoque")}
@@ -76,7 +122,6 @@ export default function EditarProduto() {
             </div>
             <TextField
               className={classes.input}
-              defaultValue="Camisa preta"
               id="descricao"
               label="Descrição do produto"
               {...register("descricao")}
@@ -86,18 +131,8 @@ export default function EditarProduto() {
             />
             <TextField
               className={classes.input}
-              defaultValue="Nome"
-              id="categoria"
-              label="Categoria"
-              {...register("categoria")}
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
-            <TextField
-              className={classes.input}
-              defaultValue="http..."
               id="imagem"
+              type="url"
               label="Imagem"
               {...register("imagem")}
               InputLabelProps={{
@@ -126,6 +161,12 @@ export default function EditarProduto() {
           </Button>
         </div>
       </form>
+      <Loading open={openLoading} />
+      <Snackbar open={erro ? true : false} autoHideDuration={6000} >
+        <Alert severity="error">
+          {erro}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }
