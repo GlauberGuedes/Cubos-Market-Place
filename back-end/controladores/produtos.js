@@ -101,32 +101,14 @@ const atualizarProduto = async (req, res) => {
   }
 
   try {
-    const queryProdutoExistente =
-      "select * from produtos where id = $1 and usuario_id = $2";
-    const produtoExistente = await conexao.query(queryProdutoExistente, [
-      id,
-      usuario.id,
-    ]);
-
-    if (produtoExistente.rowCount === 0) {
-      return res.status(404).json("Produto não encontrado.");
-    }
-    const produto = produtoExistente.rows[0];
-
-    const nomeAtualizado = nome || produto.nome;
-    const estoqueAtualizado = estoque || produto.estoque;
-    const precoAtualizado = preco || produto.preco;
-    const descricaoAtualizada = descricao || produto.descricao;
-    const imagemAtualizada = imagem || produto.imagem;
-
-    const queryProdutoAtualizado = `update produtos set nome = $1, estoque = $2, preco = $3, 
-    descricao = $4, imagem = $5 where id = $6 and usuario_id = $7`;
+    const queryProdutoAtualizado = `update produtos set nome = coalesce($1, nome), estoque = coalesce($2, estoque), preco = coalesce($3, preco), 
+    descricao = coalesce($4, descricao), imagem = coalesce($5, imagem) where id = $6 and usuario_id = $7`;
     const produtoAtualizado = await conexao.query(queryProdutoAtualizado, [
-      nomeAtualizado,
-      estoqueAtualizado,
-      precoAtualizado,
-      descricaoAtualizada,
-      imagemAtualizada,
+      nome || null,
+      estoque,
+      preco,
+      descricao || null,
+      imagem || null,
       id,
       usuario.id,
     ]);

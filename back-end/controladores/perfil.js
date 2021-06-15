@@ -25,33 +25,18 @@ const atualizarPerfil = async (req, res) => {
       return res.status(400).json(ErroNaValidacaoDaAtualizacaoDoUsuario);
     }
 
-    const queryPerfilUsuario = "select * from usuarios where id = $1";
-    const { rows, rowCount } = await conexao.query(queryPerfilUsuario, [
-      usuario.id,
-    ]);
-
-    if (rowCount === 0) {
-      return res.status(404).json("Usuario não encontrado.");
-    }
-
-    const perfilUsuario = rows[0];
     let senhaCriptografada = null;
     if (senha) {
       senhaCriptografada = await bcrypt.hash(senha, 10);
     }
 
-    const nomeAtualizado = nome || perfilUsuario.nome;
-    const nomeDaLojaAtualizado = nome_loja || perfilUsuario.nome_loja;
-    const emailAtualizado = email || perfilUsuario.email;
-    const senhaAtualizada = senhaCriptografada || perfilUsuario.senha;
-
     const queryAtualizarUsuario =
-      "update usuarios set nome = $1, nome_loja = $2, email = $3, senha = $4 where id = $5";
+      "update usuarios set nome = coalesce($1, nome), nome_loja = coalesce($2, nome_loja), email = coalesce($3, email), senha = coalesce($4, senha) where id = $5";
     const usuarioAtualizado = await conexao.query(queryAtualizarUsuario, [
-      nomeAtualizado,
-      nomeDaLojaAtualizado,
-      emailAtualizado,
-      senhaAtualizada,
+      nome || null,
+      nome_loja || null,
+      email || null,
+      senhaCriptografada,
       usuario.id,
     ]);
 
