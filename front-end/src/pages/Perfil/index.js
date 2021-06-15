@@ -4,12 +4,12 @@ import TextField from "@material-ui/core/TextField";
 import Divider from "@material-ui/core/Divider";
 import Button from "@material-ui/core/Button";
 import useStyles from "./style";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useAuth from "../../hooks/useAuth";
 import { useHistory } from "react-router-dom";
 
 export default function Perfil() {
-  const { setSelecionado } = useAuth();
+  const { setSelecionado, usuario } = useAuth();
   const classes = useStyles();
   const history = useHistory();
 
@@ -17,12 +17,14 @@ export default function Perfil() {
     setSelecionado("perfil");
   }, []);
 
+  
+  
   return (
     <div className={classes.body}>
       <Navbar />
       <div className={classes.perfil}>
         <Typography variant="h3" component="h2" className={classes.titulo}>
-          Nome da loja
+          {usuario.nome_loja}
         </Typography>
         <Typography variant="h4" component="h2" className={classes.subtitulo}>
           Perfil
@@ -30,27 +32,30 @@ export default function Perfil() {
         <div className={classes.inputsPerfil}>
           <TextField
             className={classes.input}
+            disabled
             id="nome"
             label="Seu nome"
-            defaultValue="Glauber"
+            defaultValue={usuario.nome}
             InputLabelProps={{
               shrink: true,
             }}
           />
           <TextField
             className={classes.input}
+            disabled
             id="nome-loja"
             label="Nome da loja"
-            defaultValue="Outlet GG"
+            defaultValue={usuario.nome_loja}
             InputLabelProps={{
               shrink: true,
             }}
           />
           <TextField
             className={classes.input}
+            disabled
             id="email"
             label="E-mail"
-            defaultValue="glauber@cubos.io"
+            defaultValue={usuario.email}
             InputLabelProps={{
               shrink: true,
             }}

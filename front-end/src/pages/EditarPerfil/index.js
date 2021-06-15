@@ -12,15 +12,34 @@ import Divider from "@material-ui/core/Divider";
 import Button from "@material-ui/core/Button";
 import useStyles from "./style";
 import { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useHistory } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 import { useForm } from "react-hook-form";
+import Loading from "../../components/Loading";
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 
 export default function EditarPerfil() {
-  const { setSelecionado } = useAuth();
+  const { setSelecionado, usuario, token, setUsuario } = useAuth();
   const { register, handleSubmit } = useForm();
   const [visivel, setVisivel] = useState(false);
+  const [erro, setErro] = useState("");
+  const [openLoading, setOpenLoading] = useState(false);
+  const history = useHistory();
   const classes = useStyles();
+
+  function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+  }
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setErro("");
+    }, 5000);
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [erro]);
 
   useEffect(() => {
     setSelecionado("perfil");
@@ -33,9 +52,63 @@ export default function EditarPerfil() {
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
+  
+  async function obterUsuario () {
+    setErro('');
+    setOpenLoading(true);
+    try{
+      const resposta = await fetch('http://localhost:8000/perfil', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
 
-  function onSubmit(data) {
-    console.log(data);
+      const dados = await resposta.json();
+      setOpenLoading(false);
+
+      if(!resposta.ok) {
+        return setErro(dados)
+      }
+      setUsuario(dados);
+
+    }catch(error) {
+      setOpenLoading(false);
+      setErro(error.message);
+    }
+  }
+
+  async function onSubmit(data) {
+    setErro('');
+    if(data.novaSenha || data.novaSenhaRepetida) {
+      if(data.novaSenha !== data.novaSenhaRepetida) {
+        return setErro('As senhas devem ser iguais.')
+      }
+    };
+    setOpenLoading(true);
+    try{
+      const resposta = await fetch(`http://localhost:8000/perfil`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-type': 'application/json',
+        }
+      });
+
+      const dados = await resposta.json();
+      setOpenLoading(false);
+
+      if(!resposta.ok) {
+        return setErro(dados);
+      }
+
+      await obterUsuario();
+      history.push('/perfil');
+
+    }catch(error) {
+      setOpenLoading(false);
+      setErro(error.message);
+    }
   }
 
   return (
@@ -43,7 +116,7 @@ export default function EditarPerfil() {
       <Navbar />
       <form className={classes.perfil} onSubmit={handleSubmit(onSubmit)}>
         <Typography variant="h3" component="h2" className={classes.titulo}>
-          Nome da loja
+          {usuario.nome_loja}
         </Typography>
         <Typography variant="h4" component="h2" className={classes.subtitulo}>
           Editar Perfil
@@ -67,27 +140,6 @@ export default function EditarPerfil() {
               shrink: true,
             }}
           />
-          <FormControl className={classes.input}>
-            <InputLabel shrink={true} htmlFor="senha">
-              Senha
-            </InputLabel>
-            <Input
-              id="senha"
-              {...register("senha")}
-              type={visivel ? "text" : "password"}
-              endAdornment={
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onClick={handleClickShowPassword}
-                    onMouseDown={handleMouseDownPassword}
-                  >
-                    {visivel ? <Visibility /> : <VisibilityOff />}
-                  </IconButton>
-                </InputAdornment>
-              }
-            />
-          </FormControl>
           <TextField
             className={classes.input}
             id="email"
@@ -155,6 +207,12 @@ export default function EditarPerfil() {
           </Button>
         </div>
       </form>
+      <Loading open={openLoading} />
+      <Snackbar open={erro ? true : false} autoHideDuration={6000} >
+        <Alert severity="error">
+          {erro}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }

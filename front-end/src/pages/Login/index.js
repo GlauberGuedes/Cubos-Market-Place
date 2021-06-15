@@ -5,7 +5,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import IconButton from "@material-ui/core/IconButton";
 import FormControl from "@material-ui/core/FormControl";
 import useStyles from "./style";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink, useHistory } from "react-router-dom";
 import InputLabel from "@material-ui/core/InputLabel";
 import Input from "@material-ui/core/Input";
@@ -23,8 +23,14 @@ export default function Login() {
   const [visivel, setVisivel] = useState(false);
   const [openLoading, setOpenLoading] = useState(false);
   const [erro, setErro] = useState("");
-  const { setToken, setUsuario } = useAuth();
+  const { setToken, setUsuario, token } = useAuth();
   const history = useHistory();
+
+  useEffect(() => {
+    if(token) {
+      history.push('/produtos');
+    }
+  }, [])
 
   const handleClickShowPassword = () => {
     setVisivel(!visivel);

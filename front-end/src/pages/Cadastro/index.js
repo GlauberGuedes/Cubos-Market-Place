@@ -5,7 +5,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import IconButton from "@material-ui/core/IconButton";
 import FormControl from "@material-ui/core/FormControl";
 import useStyles from "./style";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { NavLink, useHistory } from "react-router-dom";
 import InputLabel from "@material-ui/core/InputLabel";
 import Input from "@material-ui/core/Input";
@@ -15,6 +15,7 @@ import Loading from "../../components/Loading";
 import { useForm } from "react-hook-form";
 import Alert from '@material-ui/lab/Alert';
 import { validarCadastro } from '../../utils/validacao';
+import useAuth from "../../hooks/useAuth";
 
 export default function Cadastro() {
   const classes = useStyles();
@@ -23,6 +24,13 @@ export default function Cadastro() {
   const [visivel, setVisivel] = useState(false);
   const [openLoading, setOpenLoading] = useState(false);
   const [erro, setErro] = useState('');
+  const { token } = useAuth();
+
+  useEffect(() => {
+    if(token) {
+      history.push('/produtos');
+    }
+  }, [])
 
   const handleClickShowPassword = () => {
     setVisivel(!visivel);

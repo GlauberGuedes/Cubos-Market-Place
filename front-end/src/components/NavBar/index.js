@@ -11,7 +11,7 @@ import { useHistory } from "react-router-dom";
 
 export default function Navbar() {
   const classes = useStyles();
-  const { selecionado, setSelecionado, setToken } = useAuth();
+  const { selecionado, setSelecionado, setToken, setUsuario } = useAuth();
   const history = useHistory();
 
   function irParaLoja() {
@@ -26,6 +26,7 @@ export default function Navbar() {
 
   function deslogar () {
     setToken('');
+    setUsuario({});
   }
 
   return (

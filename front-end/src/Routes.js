@@ -16,8 +16,34 @@ import EditarPerfil from "./pages/EditarPerfil";
 import useAuth from "./hooks/useAuth";
 
 function Routes() {
+
+  // function RotasProtegidas() {
+  //   const { token } = useAuth();
+  //   if (!token) {
+  //     return (
+  //       <>
+  //         <Route path="/" exact component={Login} />
+  //         <Route path="/cadastro" component={Cadastro} />
+  //         <Route render={() => <Redirect to='/'/>}/>
+  //       </>
+  //     );
+  //   } else {
+  //     return (
+  //       <>
+  //         <Route path="/produtos" exact component={Produtos} />
+  //         <Route path="/produtos/novo" component={CriarProduto} />
+  //         <Route path="/produtos/:id/editar" component={EditarProduto} />
+  //         <Route path="/perfil" exact component={Perfil} />
+  //         <Route path="/perfil/editar" component={EditarPerfil} />
+  //         <Route render={() => <Redirect to='/produtos'/>}/>
+  //       </>
+  //     );
+  //   }
+  // }
+  
   function RotasProtegidas(props) {
     const { token } = useAuth();
+    console.log('entrou')
     return (
       <Route render={() => (token ? props.children : <Redirect to="/" />)} />
     );

@@ -102,6 +102,9 @@ export default function EditarProduto() {
                 {...register("preco")}
                 type="number"
                 InputProps={{
+                  inputProps: {
+                    min: 0
+                  },
                   startAdornment: (
                     <InputAdornment position="start">R$</InputAdornment>
                   ),
@@ -114,6 +117,9 @@ export default function EditarProduto() {
                 {...register("estoque")}
                 type="number"
                 InputProps={{
+                  inputProps: {
+                    min: 0
+                  },
                   startAdornment: (
                     <InputAdornment position="start">Un</InputAdornment>
                   ),
