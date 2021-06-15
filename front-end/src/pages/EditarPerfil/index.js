@@ -53,29 +53,26 @@ export default function EditarPerfil() {
     event.preventDefault();
   };
   
-  async function obterUsuario () {
-    setErro('');
-    setOpenLoading(true);
-    try{
-      const resposta = await fetch('http://localhost:8000/perfil', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+  // async function obterUsuario () {
+  //   setErro('');
+  //   setOpenLoading(true);
+  //   try{
+  //     const resposta = await fetch('http://localhost:8000/perfil', {
+  //       headers: {
+  //         'Authorization': `Bearer ${token}`
+  //       }
+  //     });
+ 
+  //     const dados = await resposta.json();
+  //     setOpenLoading(false);
 
-      const dados = await resposta.json();
-      setOpenLoading(false);
+  //     setUsuario(dados);
 
-      if(!resposta.ok) {
-        return setErro(dados)
-      }
-      setUsuario(dados);
-
-    }catch(error) {
-      setOpenLoading(false);
-      setErro(error.message);
-    }
-  }
+  //   }catch(error) {
+  //     setOpenLoading(false);
+  //     setErro(error.message);
+  //   }
+  // }
 
   async function onSubmit(data) {
     setErro('');
@@ -102,7 +99,7 @@ export default function EditarPerfil() {
         return setErro(dados);
       }
 
-      await obterUsuario();
+      //await obterUsuario();
       history.push('/perfil');
 
     }catch(error) {

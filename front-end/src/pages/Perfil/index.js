@@ -9,14 +9,32 @@ import useAuth from "../../hooks/useAuth";
 import { useHistory } from "react-router-dom";
 
 export default function Perfil() {
-  const { setSelecionado, usuario } = useAuth();
+  const { setSelecionado, usuario, token, setUsuario } = useAuth();
   const classes = useStyles();
   const history = useHistory();
 
   useEffect(() => {
     setSelecionado("perfil");
+    obterUsuario()
   }, []);
 
+  async function obterUsuario () {
+    
+    try{
+      const resposta = await fetch('http://localhost:8000/perfil', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+ 
+      const dados = await resposta.json();    
+
+      setUsuario(dados);
+
+    }catch(error) {
+      console.log(error.message)
+    }
+  }
   
   
   return (
