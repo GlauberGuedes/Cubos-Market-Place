@@ -13,20 +13,15 @@ import useAuth from "../../hooks/useAuth";
 import ModalDelete from "../../components/ModalDelete";
 import { useHistory } from "react-router-dom";
 import Loading from "../../components/Loading";
-import Snackbar from '@material-ui/core/Snackbar';
-import MuiAlert from '@material-ui/lab/Alert';
+import SnackbarAlert from "../../components/SnackbarAlert";
 
 export default function Produtos() {
   const classes = useStyles();
   const history = useHistory();
-  const { setSelecionado, token, usuario } = useAuth();
+  const { token, usuario } = useAuth();
   const [erro, setErro] = useState("");
   const [openLoading, setOpenLoading] = useState(false);
   const [produtos, setProdutos] = useState([]);
-
-  function Alert(props) {
-    return <MuiAlert elevation={6} variant="filled" {...props} />;
-  }
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -38,7 +33,6 @@ export default function Produtos() {
   }, [erro]);
 
   useEffect(() => {
-    setSelecionado("storeSelected");
     carregarProdutos();
   }, []);
 
@@ -64,7 +58,7 @@ export default function Produtos() {
 
   return (
     <div className={classes.body}>
-      <Navbar />
+      <Navbar selecionado="storeSelected"/>
       <div className={classes.produtos}>
         <Typography variant="h3" component="h2" className={classes.titulo}>
           {usuario.nome_loja}
@@ -132,11 +126,7 @@ export default function Produtos() {
         </Button>
       </div>
       <Loading open={openLoading} />
-      <Snackbar open={erro ? true : false} autoHideDuration={6000} >
-        <Alert severity="error">
-          {erro}
-        </Alert>
-      </Snackbar>
+      <SnackbarAlert erro={erro}/>
     </div>
   );
 }

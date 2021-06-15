@@ -11,22 +11,17 @@ import { useEffect, useState } from "react";
 import useAuth from "../../hooks/useAuth";
 import { useForm } from "react-hook-form";
 import Loading from "../../components/Loading";
-import Snackbar from '@material-ui/core/Snackbar';
-import MuiAlert from '@material-ui/lab/Alert';
+import SnackbarAlert from "../../components/SnackbarAlert";
 
 
 export default function EditarProduto() {
   const classes = useStyles();
   const { register, handleSubmit } = useForm();
-  const { setSelecionado, token, usuario } = useAuth();
+  const { token, usuario } = useAuth();
   const [erro, setErro] = useState('');
   const [openLoading, setOpenLoading] = useState(false);
   const { id } = useParams();
   const history = useHistory();
-  
-  function Alert(props) {
-    return <MuiAlert elevation={6} variant="filled" {...props} />;
-  }
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -36,10 +31,6 @@ export default function EditarProduto() {
       clearTimeout(timeout);
     };
   }, [erro]);
-
-  useEffect(() => {
-    setSelecionado("storeSelected");
-  }, []);
 
   async function onSubmit(data) {
     setErro('');
@@ -75,7 +66,7 @@ export default function EditarProduto() {
 
   return (
     <div className={classes.body}>
-      <Navbar />
+      <Navbar selecionado="storeSelected"/>
       <form className={classes.produtos} onSubmit={handleSubmit(onSubmit)}>
         <Typography variant="h3" component="h2" className={classes.titulo}>
           {usuario.nome_loja}
@@ -168,11 +159,7 @@ export default function EditarProduto() {
         </div>
       </form>
       <Loading open={openLoading} />
-      <Snackbar open={erro ? true : false} autoHideDuration={6000} >
-        <Alert severity="error">
-          {erro}
-        </Alert>
-      </Snackbar>
+      <SnackbarAlert erro={erro}/>
     </div>
   );
 }

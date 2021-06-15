@@ -16,21 +16,16 @@ import { NavLink, useHistory } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 import { useForm } from "react-hook-form";
 import Loading from "../../components/Loading";
-import Snackbar from '@material-ui/core/Snackbar';
-import MuiAlert from '@material-ui/lab/Alert';
+import SnackbarAlert from "../../components/SnackbarAlert";
 
 export default function EditarPerfil() {
-  const { setSelecionado, usuario, token, setUsuario } = useAuth();
+  const { usuario, token } = useAuth();
   const { register, handleSubmit } = useForm();
   const [visivel, setVisivel] = useState(false);
   const [erro, setErro] = useState("");
   const [openLoading, setOpenLoading] = useState(false);
   const history = useHistory();
   const classes = useStyles();
-
-  function Alert(props) {
-    return <MuiAlert elevation={6} variant="filled" {...props} />;
-  }
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -41,10 +36,6 @@ export default function EditarPerfil() {
     };
   }, [erro]);
 
-  useEffect(() => {
-    setSelecionado("perfil");
-  }, []);
-
   const handleClickShowPassword = () => {
     setVisivel(!visivel);
   };
@@ -52,57 +43,35 @@ export default function EditarPerfil() {
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
-  
-  // async function obterUsuario () {
-  //   setErro('');
-  //   setOpenLoading(true);
-  //   try{
-  //     const resposta = await fetch('http://localhost:8000/perfil', {
-  //       headers: {
-  //         'Authorization': `Bearer ${token}`
-  //       }
-  //     });
- 
-  //     const dados = await resposta.json();
-  //     setOpenLoading(false);
-
-  //     setUsuario(dados);
-
-  //   }catch(error) {
-  //     setOpenLoading(false);
-  //     setErro(error.message);
-  //   }
-  // }
 
   async function onSubmit(data) {
-    setErro('');
-    if(data.novaSenha || data.novaSenhaRepetida) {
-      if(data.novaSenha !== data.novaSenhaRepetida) {
-        return setErro('As senhas devem ser iguais.')
+    console.log(data)
+    setErro("");
+    if (data.novaSenha || data.novaSenhaRepetida) {
+      if (data.novaSenha !== data.novaSenhaRepetida) {
+        return setErro("As senhas devem ser iguais.");
       }
-    };
+    }
     setOpenLoading(true);
-    try{
+    try {
       const resposta = await fetch(`http://localhost:8000/perfil`, {
-        method: 'PUT',
+        method: "PUT",
         body: JSON.stringify(data),
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-type': 'application/json',
-        }
+          Authorization: `Bearer ${token}`,
+          "Content-type": "application/json",
+        },
       });
 
       const dados = await resposta.json();
       setOpenLoading(false);
 
-      if(!resposta.ok) {
+      if (!resposta.ok) {
         return setErro(dados);
       }
 
-      //await obterUsuario();
-      history.push('/perfil');
-
-    }catch(error) {
+      history.push("/perfil");
+    } catch (error) {
       setOpenLoading(false);
       setErro(error.message);
     }
@@ -110,7 +79,7 @@ export default function EditarPerfil() {
 
   return (
     <div className={classes.body}>
-      <Navbar />
+      <Navbar selecionado="perfil" />
       <form className={classes.perfil} onSubmit={handleSubmit(onSubmit)}>
         <Typography variant="h3" component="h2" className={classes.titulo}>
           {usuario.nome_loja}
@@ -205,11 +174,7 @@ export default function EditarPerfil() {
         </div>
       </form>
       <Loading open={openLoading} />
-      <Snackbar open={erro ? true : false} autoHideDuration={6000} >
-        <Alert severity="error">
-          {erro}
-        </Alert>
-      </Snackbar>
+      <SnackbarAlert erro={erro} />
     </div>
   );
 }

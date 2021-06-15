@@ -9,18 +9,16 @@ import { ReactComponent as User } from "../../assets/user.svg";
 import useAuth from "../../hooks/useAuth";
 import { useHistory } from "react-router-dom";
 
-export default function Navbar() {
+export default function Navbar(props) {
   const classes = useStyles();
-  const { selecionado, setSelecionado, setToken, setUsuario } = useAuth();
+  const { setToken, setUsuario } = useAuth();
   const history = useHistory();
 
   function irParaLoja() {
-    setSelecionado("storeSelected");
     history.push("/produtos");
   }
 
   function irParaPerfil() {
-    setSelecionado("perfil");
     history.push("/perfil");
   }
 
@@ -32,16 +30,16 @@ export default function Navbar() {
   return (
     <AppBar position="fixed" className={classes.appbar}>
       <Toolbar className={classes.nav}>
-        {selecionado === "storeSelected" && (
+        {props.selecionado === "storeSelected" && (
           <StoreSelected className={classes.cursor} />
         )}
-        {selecionado !== "storeSelected" && (
+        {props.selecionado !== "storeSelected" && (
           <Store className={classes.cursor} onClick={irParaLoja} />
         )}
-        {selecionado === "perfil" && (
+        {props.selecionado === "perfil" && (
           <UserSelected className={classes.cursor} />
         )}
-        {selecionado !== "perfil" && (
+        {props.selecionado !== "perfil" && (
           <User className={classes.cursor} onClick={irParaPerfil} />
         )}
         <Close className={classes.close} onClick={deslogar}/>
