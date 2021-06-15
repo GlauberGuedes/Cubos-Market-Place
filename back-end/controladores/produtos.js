@@ -1,6 +1,8 @@
 const conexao = require("../conexao");
-const { validarProduto } = require("../utils/validacao/produtos");
-const atualizarProdutoUsuario = require("../utils/atualizacao/produtos");
+const {
+  validarProduto,
+  validarProdutoDaAtualizacao,
+} = require("../validacao/produtos");
 
 const listarProdutos = async (req, res) => {
   const { categoria } = req.query;
@@ -49,10 +51,15 @@ const cadastrarProduto = async (req, res) => {
   const { nome, estoque, categoria, preco, descricao, imagem } = req.body;
   const { usuario } = req;
 
-  const produtoNaoValidado = validarProduto(nome, estoque, preco, descricao);
+  const ErroNaValidacaoDoProduto = validarProduto(
+    nome,
+    estoque,
+    preco,
+    descricao
+  );
 
-  if (produtoNaoValidado) {
-    return res.status(400).json(produtoNaoValidado);
+  if (ErroNaValidacaoDoProduto) {
+    return res.status(400).json(ErroNaValidacaoDoProduto);
   }
 
   try {
@@ -79,35 +86,53 @@ const cadastrarProduto = async (req, res) => {
 };
 
 const atualizarProduto = async (req, res) => {
-  const { nome, estoque, categoria, preco, descricao, imagem } = req.body;
+  const { nome, estoque, preco, descricao, imagem } = req.body;
   const { id } = req.params;
   const { usuario } = req;
+
+  const ErroNaValidacaoDaAtualizacaoDoProduto = validarProdutoDaAtualizacao(
+    nome,
+    descricao,
+    imagem
+  );
+
+  if (ErroNaValidacaoDaAtualizacaoDoProduto) {
+    return res.status(400).json(ErroNaValidacaoDaAtualizacaoDoProduto);
+  }
 
   try {
     const queryProdutoExistente =
       "select * from produtos where id = $1 and usuario_id = $2";
-    const produto = await conexao.query(queryProdutoExistente, [
+    const produtoExistente = await conexao.query(queryProdutoExistente, [
       id,
       usuario.id,
     ]);
 
-    if (produto.rowCount === 0) {
+    if (produtoExistente.rowCount === 0) {
       return res.status(404).json("Produto não encontrado.");
     }
+    const produto = produtoExistente.rows[0];
 
-    const produtoNaoAtualizado =  await atualizarProdutoUsuario(
-      nome,
-      estoque,
-      categoria,
-      preco,
-      descricao,
-      imagem,
+    const nomeAtualizado = nome || produto.nome;
+    const estoqueAtualizado = estoque || produto.estoque;
+    const precoAtualizado = preco || produto.preco;
+    const descricaoAtualizada = descricao || produto.descricao;
+    const imagemAtualizada = imagem || produto.imagem;
+
+    const queryProdutoAtualizado = `update produtos set nome = $1, estoque = $2, preco = $3, 
+    descricao = $4, imagem = $5 where id = $6 and usuario_id = $7`;
+    const produtoAtualizado = await conexao.query(queryProdutoAtualizado, [
+      nomeAtualizado,
+      estoqueAtualizado,
+      precoAtualizado,
+      descricaoAtualizada,
+      imagemAtualizada,
       id,
-      usuario.id
-    );
+      usuario.id,
+    ]);
 
-    if (produtoNaoAtualizado) {
-      return res.status(400).json(produtoNaoAtualizado);
+    if (produtoAtualizado.rowCount === 0) {
+      return res.status(400).json("Não foi possível atualizar produto.");
     }
 
     res.status(200).json("Produto atualizado com sucesso.");
@@ -116,30 +141,31 @@ const atualizarProduto = async (req, res) => {
   }
 };
 
-const deletarProduto = async (req,res) => {
+const deletarProduto = async (req, res) => {
   const { id } = req.params;
   const { usuario } = req;
 
-  try{
-    const query = 'select * from produtos where id = $1 and usuario_id = $2';
+  try {
+    const query = "select * from produtos where id = $1 and usuario_id = $2";
     const produto = await conexao.query(query, [id, usuario.id]);
 
-    if(produto.rowCount === 0) {
-      return res.status(404).json('Produto não encontrado.');
+    if (produto.rowCount === 0) {
+      return res.status(404).json("Produto não encontrado.");
     }
 
-    const queryDeletar = 'delete from produtos where id = $1 and usuario_id = $2';
+    const queryDeletar =
+      "delete from produtos where id = $1 and usuario_id = $2";
     const produtoDeletado = await conexao.query(queryDeletar, [id, usuario.id]);
 
-    if(produtoDeletado.rowCount === 0) {
-      return res.status(400).json('Não foi possível excluir o produto.');
+    if (produtoDeletado.rowCount === 0) {
+      return res.status(400).json("Não foi possível excluir o produto.");
     }
 
-    res.status(200).json('Produto deletado com sucesso.');
-  }catch(error) {
+    res.status(200).json("Produto deletado com sucesso.");
+  } catch (error) {
     return res.status(400).json(error.message);
   }
-}
+};
 
 module.exports = {
   listarProdutos,

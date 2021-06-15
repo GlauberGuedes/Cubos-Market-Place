@@ -1,7 +1,6 @@
 const conexao = require("../conexao");
 const bcrypt = require("bcrypt");
-const { validarAtualizaçãoDoUsuario } = require("../utils/validacao/usuarios");
-const atualizarPerfilUsuario =  require('../utils/atualizacao/usuario');
+const { validarAtualizaçãoDoUsuario } = require("../validacao/usuarios");
 
 const dadosPerfil = (req, res) => {
   const { usuario } = req;
@@ -13,36 +12,54 @@ const atualizarPerfil = async (req, res) => {
   const { usuario } = req;
 
   try {
-    if (email && email !== usuario.email) {
-      const queryVerificarEmail = "select * from usuarios where email = $1";
-      const { rowCount: quantidadeUsuario } = await conexao.query(
-        queryVerificarEmail,
-        [email]
+    const ErroNaValidacaoDaAtualizacaoDoUsuario =
+      await validarAtualizaçãoDoUsuario(
+        nome,
+        email,
+        nome_loja,
+        senha,
+        usuario.email
       );
 
-      if (quantidadeUsuario > 0) {
-        return res.status(400).json("Email já cadastrado.");
-      }
+    if (ErroNaValidacaoDaAtualizacaoDoUsuario) {
+      return res.status(400).json(ErroNaValidacaoDaAtualizacaoDoUsuario);
     }
 
-    const atualizacaoNaoValidade = validarAtualizaçãoDoUsuario(
-      nome,
-      email,
-      nome_loja,
-      senha
-    );
+    const queryPerfilUsuario = "select * from usuarios where id = $1";
+    const { rows, rowCount } = await conexao.query(queryPerfilUsuario, [
+      usuario.id,
+    ]);
 
-    if (atualizacaoNaoValidade) {
-      return res.status(400).json(atualizacaoNaoValidade);
+    if (rowCount === 0) {
+      return res.status(404).json("Usuario não encontrado.");
     }
 
-    const perfilAtualizado = await atualizarPerfilUsuario(email, nome, nome_loja, senha, usuario.id);
-
-    if(perfilAtualizado) {
-      return res.status(400).json(perfilAtualizado);
+    const perfilUsuario = rows[0];
+    let senhaCriptografada = null;
+    if (senha) {
+      senhaCriptografada = await bcrypt.hash(senha, 10);
     }
 
-    res.status(200).json("Usuário atualizado com sucesso.");
+    const nomeAtualizado = nome || perfilUsuario.nome;
+    const nomeDaLojaAtualizado = nome_loja || perfilUsuario.nome_loja;
+    const emailAtualizado = email || perfilUsuario.email;
+    const senhaAtualizada = senhaCriptografada || perfilUsuario.senha;
+
+    const queryAtualizarUsuario =
+      "update usuarios set nome = $1, nome_loja = $2, email = $3, senha = $4 where id = $5";
+    const usuarioAtualizado = await conexao.query(queryAtualizarUsuario, [
+      nomeAtualizado,
+      nomeDaLojaAtualizado,
+      emailAtualizado,
+      senhaAtualizada,
+      usuario.id,
+    ]);
+
+    if (usuarioAtualizado.rowCount === 0) {
+      return res.status(400).json("Não foi possível atualizar o usuário.");
+    }
+
+    res.status(200).json("Usuario atualizado com sucesso.");
   } catch (error) {
     return res.status(400).json(error.message);
   }
