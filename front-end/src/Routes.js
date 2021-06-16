@@ -13,6 +13,7 @@ import CriarProduto from "./pages/CriarProduto";
 import EditarProduto from "./pages/EditarProduto";
 import Perfil from "./pages/Perfil";
 import EditarPerfil from "./pages/EditarPerfil";
+import Usuario from "./pages/Usuario";
 import useAuth from "./hooks/useAuth";
 
 function Routes() {
@@ -36,6 +37,7 @@ function Routes() {
             <Route path="/produtos/:id/editar" component={EditarProduto} />
             <Route path="/perfil" exact component={Perfil} />
             <Route path="/perfil/editar" component={EditarPerfil} />
+            <Route path="/usuario" component={Usuario} />
           </RotasProtegidas>
         </Switch>
       </Router>
