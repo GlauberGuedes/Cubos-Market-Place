@@ -17,10 +17,10 @@ function validarProdutoDaAtualizacao(nome, descricao, imagem) {
     if (!nome.trim()) return "O campo nome não pode ser espaços vazios.";
   }
   if (descricao) {
-    if (!nome.trim()) return "O campo descricao não pode ser espaços vazios.";
+    if (!descricao.trim()) return "O campo descricao não pode ser espaços vazios.";
   }
   if (imagem) {
-    if (!nome.trim()) return "O campo imagem não pode ser espaços vazios.";
+    if (!imagem.trim()) return "O campo imagem não pode ser espaços vazios.";
   }
 }
 
