@@ -20,6 +20,7 @@ export default function EditarProduto() {
   const { token, usuario } = useAuth();
   const [erro, setErro] = useState('');
   const [openLoading, setOpenLoading] = useState(false);
+  const [dadosProduto, setDadosProduto] = useState({});
   const { id } = useParams();
   const history = useHistory();
 
@@ -32,12 +33,40 @@ export default function EditarProduto() {
     };
   }, [erro]);
 
-  async function onSubmit(data) {
-    setErro('');
+  useEffect(() => {
+    getProduct()
+  }, []);
 
+  async function getProduct () {
+    setErro('');
+    
     try{
       setOpenLoading(true);
-      console.log(data)
+      const resposta = await fetch(`http://localhost:8000/produtos/${id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const dados = await resposta.json();
+      setOpenLoading(false);
+
+      if(!resposta.ok) {
+        return setErro(dados);
+      }
+      setDadosProduto(dados)
+
+    } catch(error) {
+      setOpenLoading(false);
+      return setErro(error.message)
+    }
+  }
+
+  async function onSubmit(data) {
+    setErro('');
+    
+    try{
+      setOpenLoading(true);
       const resposta = await fetch(`http://localhost:8000/produtos/${id}`, {
         method: 'PUT',
         body: JSON.stringify(data),
@@ -51,7 +80,6 @@ export default function EditarProduto() {
       setOpenLoading(false);
 
       if(!resposta.ok) {
-        console.log(resultado)
         return setErro(resultado);
       }
 
@@ -138,8 +166,9 @@ export default function EditarProduto() {
           </div>
           <CardMedia
             className={classes.imagem}
-            image="https://bit.ly/3ctikxq"
-            title="Camisa de malha com acabamento fino."
+            component='img'
+            image={dadosProduto.imagem}
+            title={dadosProduto.descricao}
           />
         </div>
         <Divider />

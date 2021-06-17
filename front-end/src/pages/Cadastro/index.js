@@ -50,6 +50,7 @@ export default function Cadastro() {
     
     setOpenLoading(true);
 
+    //pra não enviar senhaRepetida:
     const dados = {
       nome: data.nome,
       nome_loja: data.nome_loja,
