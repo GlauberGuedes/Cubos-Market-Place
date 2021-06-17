@@ -15,6 +15,19 @@ function validarUsuario(nome, nome_loja, email, senha) {
   if (!email.includes(".", indice)) return "O campo email está incorreto.";
 }
 
+function validarCliente(nome, email, senha) {
+  if (!nome.trim()) return "O campo nome é obrigatório.";
+
+  if (!email.trim()) return "O campo email é obrigatório.";
+
+  if (!senha.trim()) return "O campo senha é obrigatório.";
+
+  if (!email.includes("@")) return "O campo email está incorreto.";
+
+  const indice = email.indexOf("@");
+  if (!email.includes(".", indice)) return "O campo email está incorreto.";
+}
+
 async function validarAtualizaçãoDoUsuario(
   nome,
   email,
@@ -61,4 +74,4 @@ async function validarAtualizaçãoDoUsuario(
   }
 }
 
-module.exports = { validarUsuario, validarAtualizaçãoDoUsuario };
+module.exports = { validarUsuario, validarAtualizaçãoDoUsuario, validarCliente };

@@ -15,6 +15,7 @@ import { withStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import Badge from '@material-ui/core/Badge';
+import useAuth from "../../hooks/useAuth";
 
 export default function Usuarios() {
   const [produtos, setProdutos] = useState([]);
@@ -23,6 +24,7 @@ export default function Usuarios() {
   const [produtoNaSacola, setProdutoNaSacola] = useState([]);
   const [valorSacola, setValorSacola] = useState(0);
   const classes = useStyles();
+  const { usuario } = useAuth();
 
   const StyledBadge = withStyles((theme) => ({
     badge: {
@@ -150,7 +152,7 @@ export default function Usuarios() {
         <div className={classes.usuario}>
           <Avatar src="/broken-image.jpg" />
           <Typography variant="h6" component="h2">
-            Bem vindo (Glauber)
+            Bem vindo ({usuario.nome})
           </Typography>
         </div>
       </header>

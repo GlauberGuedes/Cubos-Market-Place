@@ -6,7 +6,7 @@ import IconButton from "@material-ui/core/IconButton";
 import FormControl from "@material-ui/core/FormControl";
 import useStyles from "./style";
 import { useState, useEffect } from "react";
-import { NavLink, useHistory, Link } from "react-router-dom";
+import { NavLink, useHistory } from "react-router-dom";
 import InputLabel from "@material-ui/core/InputLabel";
 import Input from "@material-ui/core/Input";
 import Typography from "@material-ui/core/Typography";
@@ -14,21 +14,21 @@ import Button from "@material-ui/core/Button";
 import Loading from "../../components/Loading";
 import { useForm } from "react-hook-form";
 import Alert from '@material-ui/lab/Alert';
-import { validarCadastro } from '../../utils/validacao';
+import { validarCadastroUsuario } from '../../utils/validacao';
 import useAuth from "../../hooks/useAuth";
 
-export default function Cadastro() {
+export default function CadastroUsuario() {
   const classes = useStyles();
   const history = useHistory();
   const { register, handleSubmit } = useForm();
   const [visivel, setVisivel] = useState(false);
   const [openLoading, setOpenLoading] = useState(false);
   const [erro, setErro] = useState('');
-  const { token } = useAuth();
+  const { tokenUsuario } = useAuth();
 
   useEffect(() => {
-    if(token) {
-      history.push('/produtos');
+    if(tokenUsuario) {
+      history.push('/usuario');
     }
   }, [])
 
@@ -42,7 +42,7 @@ export default function Cadastro() {
 
   async function onSubmit(data) {
     setErro('');
-    const cadastroValidado = validarCadastro(data);
+    const cadastroValidado = validarCadastroUsuario(data);
     
     if(cadastroValidado) {
       return setErro(cadastroValidado);
@@ -50,16 +50,16 @@ export default function Cadastro() {
     
     setOpenLoading(true);
 
-    const dados = {
-      nome: data.nome,
-      nome_loja: data.nome_loja,
-      email: data.email,
-      senha: data.senha
-    }
+    // const dados = {
+    //   nome: data.nome,
+    //   nome_loja: data.nome_loja,
+    //   email: data.email,
+    //   senha: data.senha
+    // }
     try{
-      const resposta = await fetch('http://localhost:8000/cadastro', {
+      const resposta = await fetch('http://localhost:8000/cadastro-usuario', {
         method: 'POST',
-        body: JSON.stringify(dados),
+        body: JSON.stringify(data),
         headers: {
           'Content-type': 'application/json'
         }
@@ -72,7 +72,7 @@ export default function Cadastro() {
         return setErro(resultado);
       }
 
-      history.push('/');
+      history.push('/login');
     }catch(error) {
       setOpenLoading(false);
       setErro(error.message);
@@ -91,15 +91,6 @@ export default function Cadastro() {
           id="nome"
           label="Seu nome"
           {...register("nome")}
-          InputLabelProps={{
-            shrink: true,
-          }}
-        />
-        <TextField
-          className={classes.input}
-          id="nome-loja"
-          label="Nome da loja"
-          {...register("nome_loja")}
           InputLabelProps={{
             shrink: true,
           }}
@@ -165,10 +156,10 @@ export default function Cadastro() {
           CRIAR CONTA
         </Button>
         <Typography variant="body2" component="p">
-          Já possui uma conta? <NavLink to="/">ACESSE</NavLink>
+          Já possui uma conta? <NavLink to="/login">ACESSE</NavLink>
         </Typography>
-        <Typography variant="body2" component="h2">
-          Quer cadastrar uma conta cliente? <Link to="/cadastro-usuario">ACESSE</Link>
+        <Typography variant="body2" component="p">
+          Quer cadastar uma loja? <NavLink to="/cadastro">ACESSE</NavLink>
         </Typography>
       </form>
       <Loading open={openLoading}/>

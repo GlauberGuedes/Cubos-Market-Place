@@ -9,9 +9,11 @@ const usuario = require('./controladores/usuario');
 
 //cadastro
 rotas.post('/cadastro', cadastro.CadastrarUsuario);
+rotas.post('/cadastro-usuario', cadastro.CadastrarCliente);
 
 //login
 rotas.post('/login', login.loginUsuario);
+rotas.post('/login-usuario', login.loginCliente);
 
 //usuario
 rotas.get('/usuario', usuario.listarProdutos);
