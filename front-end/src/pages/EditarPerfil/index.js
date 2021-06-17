@@ -45,7 +45,7 @@ export default function EditarPerfil() {
   };
 
   async function onSubmit(data) {
-    console.log(data)
+    
     setErro("");
     if (data.novaSenha || data.novaSenhaRepetida) {
       if (data.novaSenha !== data.novaSenhaRepetida) {
@@ -53,21 +53,29 @@ export default function EditarPerfil() {
       }
     }
     setOpenLoading(true);
+
+    //para enviar uma senha:
+    const dados = {
+      nome: data.nome,
+      nome_loja: data.nome_loja,
+      email: data.email,
+      senha: data.novaSenha
+    }
     try {
       const resposta = await fetch(`http://localhost:8000/perfil`, {
         method: "PUT",
-        body: JSON.stringify(data),
+        body: JSON.stringify(dados),
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-type": "application/json",
         },
       });
 
-      const dados = await resposta.json();
+      const informacoesApi = await resposta.json();
       setOpenLoading(false);
 
       if (!resposta.ok) {
-        return setErro(dados);
+        return setErro(informacoesApi);
       }
 
       history.push("/perfil");

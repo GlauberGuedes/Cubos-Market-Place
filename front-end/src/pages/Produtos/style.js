@@ -24,7 +24,6 @@ const useStyles = makeStyles((theme) => ({
     overflowX: 'auto',
   },
   card: {
-    width: 201,
     minWidth: 201,
     minHeight: 355,
     marginBottom: 13,

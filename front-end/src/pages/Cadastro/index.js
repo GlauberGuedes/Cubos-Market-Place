@@ -66,11 +66,11 @@ export default function Cadastro() {
         }
       });
 
-      const resultado = await resposta.json();
+      const informacoesApi = await resposta.json();
       
       setOpenLoading(false);
       if(!resposta.ok) {
-        return setErro(resultado);
+        return setErro(informacoesApi);
       }
 
       history.push('/');
