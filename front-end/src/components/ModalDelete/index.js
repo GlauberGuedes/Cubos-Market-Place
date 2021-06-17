@@ -27,7 +27,6 @@ export default function Modal({ id, setErro, setOpenLoading, token, getProducts 
   async function removerProduto () {
     setErro('');
     setOpenLoading(true);
-    console.log(token)
     try {
       const resposta = await fetch(`http://localhost:8000/produtos/${id}`, {
         method: 'DELETE',
@@ -41,7 +40,6 @@ export default function Modal({ id, setErro, setOpenLoading, token, getProducts 
       setOpenLoading(false);
 
       if(!resposta.ok) {
-        console.log(data)
         return setErro(data);
       }
 
