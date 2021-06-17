@@ -18,10 +18,10 @@ export default function Perfil() {
   const [openLoading, setOpenLoading] = useState(false);
 
   useEffect(() => {
-    obterUsuario();
+    getUser();
   }, []);
 
-  async function obterUsuario() {
+  async function getUser() {
     setErro("");
     setOpenLoading(true);
     try {

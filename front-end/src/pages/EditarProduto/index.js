@@ -37,7 +37,7 @@ export default function EditarProduto() {
 
     try{
       setOpenLoading(true);
-      
+      console.log(data)
       const resposta = await fetch(`http://localhost:8000/produtos/${id}`, {
         method: 'PUT',
         body: JSON.stringify(data),
@@ -58,7 +58,6 @@ export default function EditarProduto() {
       history.push('/produtos');
 
     }catch(error) {
-      console.log(error.message)
       setOpenLoading(false);
       return setErro(error.message)
     }

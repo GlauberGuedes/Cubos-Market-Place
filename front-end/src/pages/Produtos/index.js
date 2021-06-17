@@ -33,10 +33,10 @@ export default function Produtos() {
   }, [erro]);
 
   useEffect(() => {
-    carregarProdutos();
+    getProducts();
   }, []);
 
-  async function carregarProdutos() {
+  async function getProducts() {
     setErro("");
     setOpenLoading(true);
     try {
@@ -82,7 +82,7 @@ export default function Produtos() {
                   >
                     <ModalDelete
                       id={produto.id}
-                      carregarProdutos={carregarProdutos}
+                      getProducts={getProducts}
                       setOpenLoading={setOpenLoading}
                       setErro={setErro}
                       token={token}

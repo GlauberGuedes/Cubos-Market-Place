@@ -8,7 +8,7 @@ import Typography from "@material-ui/core/Typography";
 import useStyles from "./style";
 import { useState } from "react";
 
-export default function Modal({ id, setErro, setOpenLoading, token, carregarProdutos }) {
+export default function Modal({ id, setErro, setOpenLoading, token, getProducts }) {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
 
@@ -46,7 +46,7 @@ export default function Modal({ id, setErro, setOpenLoading, token, carregarProd
       }
 
       handleClose();
-      carregarProdutos();
+      getProducts();
 
     }catch(error) {
       setOpenLoading(false);
