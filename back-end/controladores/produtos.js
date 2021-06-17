@@ -61,16 +61,16 @@ const cadastrarProduto = async (req, res) => {
   if (ErroNaValidacaoDoProduto) {
     return res.status(400).json(ErroNaValidacaoDoProduto);
   }
-
+  
   try {
     const query = `insert into produtos (usuario_id, nome, estoque, categoria, preco, descricao, imagem) 
     values ($1, $2, $3, $4, $5, $6, $7)`;
     const produtoCadastrado = await conexao.query(query, [
       usuario.id,
       nome,
-      estoque,
+      Number(estoque),
       categoria,
-      preco,
+      Number(preco),
       descricao,
       imagem,
     ]);
@@ -105,8 +105,8 @@ const atualizarProduto = async (req, res) => {
     descricao = coalesce($4, descricao), imagem = coalesce($5, imagem) where id = $6 and usuario_id = $7`;
     const produtoAtualizado = await conexao.query(queryProdutoAtualizado, [
       nome || null,
-      estoque,
-      preco,
+      Number(estoque) || null,
+      Number(preco) || null,
       descricao || null,
       imagem || null,
       id,

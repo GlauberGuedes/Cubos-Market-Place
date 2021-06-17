@@ -3,7 +3,11 @@ function validarProduto(nome, estoque, preco, descricao) {
 
   if (!estoque) return "O campo estoque é obrigatório.";
 
+  if (!Number(estoque)) return "O campo estoque deve ser um número.";
+
   if (!preco) return "O campo preco é obrigatório.";
+
+  if (!Number(preco)) return "O campo preco deve ser um número.";
 
   if (!descricao.trim()) return "O campo descricao é obrigatório.";
 }
