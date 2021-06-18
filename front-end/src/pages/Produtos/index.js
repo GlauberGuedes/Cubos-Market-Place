@@ -36,6 +36,7 @@ export default function Produtos() {
     getProducts();
   }, []);
 
+  //O prettier retira as "" do authorization.
   async function getProducts() {
     setErro("");
     setOpenLoading(true);

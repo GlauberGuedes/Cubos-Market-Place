@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 const useStyles = makeStyles((theme) => ({
   body: {
     background: "#EEEEEE",
+    minHeight: "100vh",
   },
   produtos: {
     padding: "78px 0 25px 212px",
