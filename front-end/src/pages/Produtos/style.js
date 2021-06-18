@@ -24,13 +24,14 @@ const useStyles = makeStyles((theme) => ({
     overflowX: 'auto',
   },
   card: {
+    maxWidth: 201,
     minWidth: 201,
     minHeight: 355,
     marginBottom: 13,
     borderRadius: 24,
   },
   imagem: {
-    width: 201,
+    width: '100%',
     height: 250,
   },
   cardActions: {
