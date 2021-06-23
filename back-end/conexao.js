@@ -4,7 +4,7 @@ const pool = new Pool({
     user: 'postgres',
     host: 'localhost',
     database: 'market_cubos',
-    password: '180694gf',
+    password: 'postgres',
     port: '5432'
 });
 
